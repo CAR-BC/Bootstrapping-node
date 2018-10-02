@@ -3,15 +3,15 @@ package network;
 public class Neighbour {
     private String ip;
     private int port;
-    private String publicKey;
+    private String nodeID;
 
     public Neighbour(String ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public Neighbour(String publicKey, String ip, int port) {
-        this.publicKey = publicKey;
+    public Neighbour(String nodeID, String ip, int port) {
+        this.nodeID = nodeID;
         this.ip = ip;
         this.port = port;
     }
@@ -32,12 +32,12 @@ public class Neighbour {
         this.port = port;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getNodeID() {
+        return nodeID;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setNodeID(String nodeID) {
+        this.nodeID = nodeID;
     }
 
 

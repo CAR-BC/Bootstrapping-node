@@ -47,7 +47,8 @@ public class FirstNodeHandler extends ChannelInboundHandlerAdapter {
             System.out.println(data);
 
 
-            RequestMessage ackMessage = AckMessageCreator.createAckMessage("IPRequest");
+            String messageType = (String)headers.get("messageType");
+            RequestMessage ackMessage = AckMessageCreator.createAckMessage(messageType);
             ackMessage.addHeader("keepActive", "false");
             ackMessage.addTheData("hello from IP server");
             ChannelFuture f = ctx.writeAndFlush(ackMessage);

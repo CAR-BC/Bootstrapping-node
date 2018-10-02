@@ -29,7 +29,7 @@ public class NodeConfig {
     }
 
     public void addNeighbour(Neighbour neighbour) {
-        if(!isNeighbourExist(neighbour.getIp(),neighbour.getPort())) {
+        if(!isNeighbourExist(neighbour.getNodeID())) {
             this.neighbours.add(neighbour);
         }
     }
@@ -42,16 +42,16 @@ public class NodeConfig {
         Neighbour neighbour = null;
 
         for(Neighbour peer: neighbours) {
-            if(publicKey.equals(peer.getPublicKey())) {
+            if(publicKey.equals(peer.getNodeID())) {
                 neighbour = peer;
             }
         }
         return neighbour;
     }
 
-    public boolean isNeighbourExist(String ip, int port) {
+    public boolean isNeighbourExist(String nodeID) {
         for(Neighbour neighbour: neighbours) {
-            if(neighbour.getIp().equals(ip) && neighbour.getPort() == port){
+            if(nodeID.equals(neighbour.getNodeID())){
                 return true;
             }
         }

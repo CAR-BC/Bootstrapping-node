@@ -1,18 +1,22 @@
+import DAOLayer.DAO;
 import Exceptions.FileUtilityException;
 import config.CommonConfigHolder;
 import constants.Constants;
+import network.Neighbour;
 import network.Node;
+import org.json.JSONObject;
 import org.slf4j.impl.SimpleLogger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
-
+import java.sql.SQLException;
 
 
 public class FirstNodeTest {
-    public static void main(String[] args) throws FileUtilityException, IOException {
+    public static void main(String[] args) throws FileUtilityException, IOException, SQLException {
 
         InetAddress inetAddress = InetAddress.getLocalHost();
         System.out.println("IP Address:- " + inetAddress.getHostAddress());
@@ -48,6 +52,22 @@ public class FirstNodeTest {
          * */
         node.startListeningTest();
 
+        Node.getInstance().addPeerToList("abcd1234","192.168.8.10", 49222);
+        Node.getInstance().addPeerToList("pqrs5673","192.168.8.11", 49222);
+
+//        for(Neighbour neighbour: Node.getInstance().getNodeConfig().getNeighbours()) {
+//            JSONObject jsonObject = new JSONObject(neighbour);
+//            jsonObject.put("signature", "$$signature$$");
+//            System.out.println(jsonObject);
+//        }
+
+        DAO dao = new DAO();
+
+        for(Neighbour neighbour: dao.getPeers()) {
+            JSONObject jsonObject = new JSONObject(neighbour);
+            jsonObject.put("signature", "$$signature$$");
+            System.out.println(jsonObject);
+        }
 
     }
 }

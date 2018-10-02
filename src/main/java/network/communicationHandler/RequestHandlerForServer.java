@@ -1,8 +1,10 @@
 package network.communicationHandler;
 
+import config.ChainUtil;
+import config.KeyGenerator;
 import network.Client.RequestMessage;
 import network.Node;
-import network.Protocol.PeerDetailsMessageCreator;
+import network.Protocol.MessageCreator;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -24,40 +26,44 @@ public class RequestHandlerForServer {
     public void handleRequest(Map headers, JSONObject data) {
 
         String messageType = (String) headers.get("messageType");
+        String peerID = (String) headers.get("sender");
         switch (messageType) {
             case "RequestIP":
                 System.out.println("RequestIP");
-                handleRequestIP(data);
+                handleRequestIP(data, peerID);
                 break;
 
-            case "TransactionValidation":
-                System.out.println("TransactionProposalResponse");
-//                handleTransactionProposalResponse(data);
+            case "RequestPeerDetails":
+                System.out.println("RequestPeerDetails");
+                handlePeerDetailsRequest(data);
                 break;
+
         }
     }
 
-    public void handleRequestIP(JSONObject data) {
+    public void handleRequestIP(JSONObject data, String peerID) {
         String IP = data.getString("ip");
         int port = data.getInt("ListeningPort");
-
-//        JSONObject peers = new JSONObject();
-//        JSONArray IPList = new JSONArray();
-//
-//        for(int i = 1; i< 5; i++) {
-//            JSONObject temp = new JSONObject();
-//            temp.put("publicKey",String.valueOf(i));
-//            temp.put("ip",String.valueOf(i)+".10.13.245");
-//            temp.put("ListeningPort",i*100);
-//            IPList.put(temp);
-//        }
-//        peers.put("peers", IPList);
-
-        String peersDetailsAsJSONString = Node.getInstance().getPeersAsJSONString();
-        //save ip and port
-        Node.getInstance().addPeerToList("PK",IP,port);
-        RequestMessage peersDetails = PeerDetailsMessageCreator.createPeerDetailsMessage(peersDetailsAsJSONString);
+        JSONObject peersDetailsAsJSONString = Node.getInstance().getPeersAsJSONString();
+        Node.getInstance().addPeerToList(peerID, IP,port);
+        RequestMessage peersDetails = MessageCreator.createMessage(peersDetailsAsJSONString,"IPResponse");
         peersDetails.addHeader("keepActive", "false");
         Node.getInstance().sendMessageToPeer(IP, port,peersDetails);
     }
+
+    public void handlePeerDetailsRequest(JSONObject data) {
+        String ip = data.getString("ip");
+        int listeningPort = data.getInt("listeningPort");
+        String peerID = data.getString("peerID");
+        JSONObject jsonObject = new JSONObject();
+        JSONObject peerDetails = Node.getInstance().findPeerDetails(peerID);
+        jsonObject.put("peerDetails", peerDetails);
+        jsonObject.put("signature", ChainUtil.getInstance().digitalSignature(peerDetails.toString()));
+        jsonObject.put("signedData", peerDetails.toString());
+        jsonObject.put("publicKey", KeyGenerator.getInstance().getPublicKeyAsString());
+        RequestMessage peerDetailMessage = MessageCreator.createMessage(jsonObject,"RequestedPeerDetails");
+        Node.getInstance().sendMessageToPeer(ip,listeningPort, peerDetailMessage);
+    }
+
+
 }

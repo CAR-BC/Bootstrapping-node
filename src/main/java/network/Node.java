@@ -96,13 +96,13 @@ public final class Node {
 
     //move later to server node
 
-    public void addPeerToList(String peerPublicKey, String peerIP, int peerPort ) {
-        Neighbour neighbour = new Neighbour(peerPublicKey,peerIP,peerPort);
+    public void addPeerToList(String nodeID, String peerIP, int peerPort ) {
+        Neighbour neighbour = new Neighbour(nodeID, peerIP,peerPort);
         nodeConfig.addNeighbour(neighbour);
 
         DAO dao = new DAO();
-        dao.AddPeerToDatabase(peerIP,peerPort);
-        System.out.println("peer added successfully");
+        dao.AddPeerToDatabase(nodeID,peerIP,peerPort);
+        log.info("peer registered successfully: ", nodeID);
     }
 
     public NodeConfig getNodeConfig() {
@@ -124,20 +124,27 @@ public final class Node {
         log.info("Initialized client");
     }
 
-    public String getPeersAsJSONString() {
+    public JSONObject getPeersAsJSONString() {
         JSONObject peers = new JSONObject();
         JSONArray IPList = new JSONArray();
-
-        System.out.println(nodeConfig.getNeighbours().size());
-
         for(Neighbour neighbour: nodeConfig.getNeighbours()) {
             JSONObject temp = new JSONObject();
             temp.put("ip", neighbour.getIp());
+            temp.put("peerID", neighbour.getNodeID());
             temp.put("ListeningPort", neighbour.getPort());
             IPList.put(temp);
         }
         peers.put("peers",IPList);
-        return peers.toString();
+        return peers;
+    }
+
+    public JSONObject findPeerDetails(String peerID) {
+        for(Neighbour neighbour: nodeConfig.getNeighbours()) {
+            if(peerID.equals(neighbour.getNodeID())) {
+                return new JSONObject(neighbour);
+            }
+        }
+        return null;
     }
 
 }

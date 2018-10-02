@@ -5,32 +5,97 @@ import java.security.*;
 
 public class ChainUtil {
 
+    private static ChainUtil chainUtil;
 
+    //change to private after changes
     public ChainUtil() {}
 
+    public static ChainUtil getInstance() {
+        if (chainUtil == null) {
+            chainUtil = new ChainUtil();
+        }
+        return chainUtil;
+    }
 
-    public static byte[] sign(PrivateKey privateKey,String data) throws InvalidKeyException, NoSuchProviderException, NoSuchAlgorithmException, SignatureException {
+    public String digitalSignature(String data) {
+        Signature dsa = null;
+        String signature = null;
+        try {
+            dsa = Signature.getInstance("SHA1withDSA", "SUN");
+            dsa.initSign(KeyGenerator.getInstance().getPrivateKey());
+            byte[] byteArray = data.getBytes();
+            dsa.update(byteArray);
+            signature = bytesToHex(dsa.sign());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        return signature;
+    }
+
+    public boolean signatureVerification(String publicKey, String signature, String data) {
+        return verify(KeyGenerator.getInstance().getPublicKey(publicKey),hexStringToByteArray(signature),data);
+    }
+
+    public static byte[] sign(PrivateKey privateKey,String data) throws SignatureException {
         //sign the data
-        Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
-        dsa.initSign(privateKey);
-        byte[] byteArray = data.getBytes();
-        dsa.update(byteArray);
+        Signature dsa = null;
+        try {
+            dsa = Signature.getInstance("SHA1withDSA", "SUN");
+            dsa.initSign(privateKey);
+            byte[] byteArray = data.getBytes();
+            dsa.update(byteArray);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
         return dsa.sign();
     }
 
-    public static boolean verify(PublicKey publicKey, byte[] signature, String data) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature sig = Signature.getInstance("SHA1withDSA", "SUN");
-        sig.initVerify(publicKey);
-        sig.update(data.getBytes(),0,data.getBytes().length);
-        return sig.verify(signature);
+    public static boolean verify(PublicKey publicKey, byte[] signature, String data) {
+        Signature sig = null;
+        boolean verification = false;
+        try {
+            sig = Signature.getInstance("SHA1withDSA", "SUN");
+            sig.initVerify(publicKey);
+            sig.update(data.getBytes(),0,data.getBytes().length);
+            verification = sig.verify(signature);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        return verification;
     }
 
 //    public publicKeyEncryption() {
 //
 //    }
 
-    public static byte[] getHash(String data) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    public static byte[] getHashByteArray(String data) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         return digest.digest(data.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -54,5 +119,16 @@ public class ChainUtil {
         return data;
     }
 
+    public String getHash(String data) {
+        return bytesToHex(getHashByteArray(data));
+    }
+
+
+    public boolean verifyUser(String peerID, String publicKey) {
+        if(peerID.equals(publicKey.substring(0,40))) {
+            return true;
+        }
+        return false;
+    }
 
 }
