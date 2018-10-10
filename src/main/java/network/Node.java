@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Random;
 
 public final class Node {
@@ -70,21 +72,19 @@ public final class Node {
         nodeConfig.setListenerPort(commonConfig.getInt("listener_port"));
         System.out.println(commonConfig.toString());
 
-        //Add neighbours list
-        JSONArray neighbours = commonConfig.getJSONArray("neighbours");
-//        for (int i = 0; i < neighbours.length(); i++) {
-//            JSONObject neighbourJson = neighbours.getJSONObject(i);
-//            String neightbourIP = neighbourJson.getString("ip");
-//            int neightbourPort = neighbourJson.getInt("port");
-//            Neighbour neighbour = new Neighbour(neightbourIP, neightbourPort);
-//            nodeConfig.addNeighbour(neighbour);
-//        }
+        //Get peers from database
+        DAO dao = new DAO();
+        try {
+            ArrayList<Neighbour> peers = dao.getPeers();
+            for(Neighbour neighbour: peers) {
+                nodeConfig.addNeighbour(neighbour);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         log.info("Initializing Node:{}", peerID);
-
     }
-
-    //revert later
 
     FirstNode firstNode;
     public void startListeningTest() {
@@ -94,7 +94,6 @@ public final class Node {
         log.info("Initialized listener");
     }
 
-    //move later to server node
 
     public void addPeerToList(String nodeID, String peerIP, int peerPort ) {
         DAO dao = new DAO();
@@ -138,15 +137,17 @@ public final class Node {
         log.info("Initialized client");
     }
 
-    public JSONObject getPeersAsJSONString() {
+    public JSONObject getPeersAsJSONString(String peerID) {
         JSONObject peers = new JSONObject();
         JSONArray IPList = new JSONArray();
         for(Neighbour neighbour: nodeConfig.getNeighbours()) {
-            JSONObject temp = new JSONObject();
-            temp.put("ip", neighbour.getIp());
-            temp.put("peerID", neighbour.getNodeID());
-            temp.put("ListeningPort", neighbour.getPort());
-            IPList.put(temp);
+            if(!peerID.equals(neighbour.getNodeID())) {
+                JSONObject temp = new JSONObject();
+                temp.put("ip", neighbour.getIp());
+                temp.put("peerID", neighbour.getNodeID());
+                temp.put("ListeningPort", neighbour.getPort());
+                IPList.put(temp);
+            }
         }
         peers.put("peers",IPList);
         return peers;

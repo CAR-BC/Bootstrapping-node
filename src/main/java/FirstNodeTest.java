@@ -3,7 +3,9 @@ import Exceptions.FileUtilityException;
 import config.CommonConfigHolder;
 import config.KeyGenerator;
 import constants.Constants;
+import network.Neighbour;
 import network.Node;
+import org.json.JSONObject;
 import org.slf4j.impl.SimpleLogger;
 
 import java.io.BufferedReader;
@@ -55,11 +57,6 @@ public class FirstNodeTest {
 //        Node.getInstance().addPeerToList("abcd1234","192.168.8.10", 49222);
 //        Node.getInstance().addPeerToList("pqrs5673","192.168.8.11", 49222);
 
-//        for(Neighbour neighbour: Node.getInstance().getNodeConfig().getNeighbours()) {
-//            JSONObject jsonObject = new JSONObject(neighbour);
-//            jsonObject.put("signature", "$$signature$$");
-//            System.out.println(jsonObject);
-//        }
 
         DAO dao = new DAO();
 
@@ -92,6 +89,11 @@ public class FirstNodeTest {
 //        }
 
 //        dao.updatePeer("1234", "127.0.01", 23445);
+
+        for(Neighbour neighbour: node.getNodeConfig().getNeighbours()) {
+            System.out.println(new JSONObject(neighbour));
+        }
+
 
     }
 }

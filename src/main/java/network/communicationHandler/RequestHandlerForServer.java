@@ -44,8 +44,8 @@ public class RequestHandlerForServer {
     public void handleRequestIP(JSONObject data, String peerID) {
         String IP = data.getString("ip");
         int port = data.getInt("ListeningPort");
-        JSONObject peersDetailsAsJSONString = Node.getInstance().getPeersAsJSONString();
         Node.getInstance().addPeerToList(peerID, IP,port);
+        JSONObject peersDetailsAsJSONString = Node.getInstance().getPeersAsJSONString(peerID);
         RequestMessage peersDetails = MessageCreator.createMessage(peersDetailsAsJSONString,"IPResponse");
         peersDetails.addHeader("keepActive", "false");
         Node.getInstance().sendMessageToPeer(IP, port,peersDetails);
