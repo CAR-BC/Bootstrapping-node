@@ -35,12 +35,31 @@ public class DAO {
             ptmt.setString(1,nodeID);
             ptmt.setString(2, ip);
             ptmt.setInt(3, port);
-            ptmt.execute();
+            ptmt.executeUpdate();
             if (ptmt != null)
                 ptmt.close();
             if (connection != null)
                 connection.close();
             log.info("Peer added to database successfully: {}", nodeID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updatePeer(String nodeID, String ip, int port ) {
+        String queryString = "UPDATE `PeerDetails` SET `ip` = ?, `port` = ? WHERE  `node_id` = ?";
+        try {
+
+            ptmt = connection.prepareStatement(queryString);
+            ptmt.setString(1, ip);
+            ptmt.setInt(2, port);
+            ptmt.setString(3, nodeID);
+            ptmt.executeUpdate();
+            if (ptmt != null)
+                ptmt.close();
+            if (connection != null)
+                connection.close();
+            log.info("Peer details updated successfully: {}", nodeID);
         } catch (SQLException e) {
             e.printStackTrace();
         }

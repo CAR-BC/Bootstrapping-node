@@ -125,7 +125,6 @@ public class KeyGenerator {
 
     public PublicKey getPublicKey() {
         if (getResourcesFilePath("public.key") == null) {
-            System.out.println("here");
             generateKeyPair();
         }
         return loadPublicKey();

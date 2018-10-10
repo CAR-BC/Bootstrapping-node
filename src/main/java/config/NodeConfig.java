@@ -57,4 +57,13 @@ public class NodeConfig {
         }
         return false;
     }
+
+    public void updateNeighbourDetails(String peerID, String ip, int port) {
+        for(Neighbour neighbour: neighbours) {
+            if(peerID.equals(neighbour.getNodeID())) {
+                neighbour.setIp(ip);
+                neighbour.setPort(port);
+            }
+        }
+    }
 }

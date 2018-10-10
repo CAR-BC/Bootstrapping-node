@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class ConnectionFactory {
     String driverClassName = "com.mysql.jdbc.Driver";
-    String connectionUrl = "jdbc:mysql://localhost:3306/CarBC?verifyServerCertificate=false&useSSL=true";
+    String connectionUrl = "jdbc:mysql://localhost:3306/Registry?verifyServerCertificate=false&useSSL=true";
     String dbUser = "root";
     String dbPwd = "1066";
 

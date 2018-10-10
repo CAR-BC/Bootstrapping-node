@@ -97,12 +97,26 @@ public final class Node {
     //move later to server node
 
     public void addPeerToList(String nodeID, String peerIP, int peerPort ) {
-        Neighbour neighbour = new Neighbour(nodeID, peerIP,peerPort);
-        nodeConfig.addNeighbour(neighbour);
-
         DAO dao = new DAO();
-        dao.AddPeerToDatabase(nodeID,peerIP,peerPort);
-        log.info("peer registered successfully: ", nodeID);
+        JSONObject peer = findPeerDetails(nodeID);
+
+        if( peer == null) {
+            Neighbour neighbour = new Neighbour(nodeID, peerIP,peerPort);
+            nodeConfig.addNeighbour(neighbour);
+            dao.AddPeerToDatabase(nodeID,peerIP,peerPort);
+            Node.getInstance().showNeighbours();
+            log.info("peer registered successfully: ", nodeID);
+        }else {
+            String ip = peer.getString("ip");
+            int port = peer.getInt("port");
+
+            if(!ip.equals(peerIP) || port != peerPort) {
+                Node.getInstance().getNodeConfig().updateNeighbourDetails(nodeID, peerIP, peerPort);
+                dao.updatePeer(nodeID,peerIP,peerPort);
+                Node.getInstance().showNeighbours();
+                log.info("peer data updated successfully: ", nodeID);
+            }
+        }
     }
 
     public NodeConfig getNodeConfig() {
@@ -145,6 +159,14 @@ public final class Node {
             }
         }
         return null;
+    }
+
+    //test method
+
+    public void showNeighbours() {
+        for(Neighbour neighbour: nodeConfig.getNeighbours()) {
+            System.out.println(new JSONObject(neighbour));
+        }
     }
 
 }

@@ -1,10 +1,9 @@
 import DAOLayer.DAO;
 import Exceptions.FileUtilityException;
 import config.CommonConfigHolder;
+import config.KeyGenerator;
 import constants.Constants;
-import network.Neighbour;
 import network.Node;
-import org.json.JSONObject;
 import org.slf4j.impl.SimpleLogger;
 
 import java.io.BufferedReader;
@@ -51,9 +50,10 @@ public class FirstNodeTest {
          * when we want our node to start listening
          * */
         node.startListeningTest();
+        System.out.println(KeyGenerator.getInstance().getPublicKeyAsString());
 
-        Node.getInstance().addPeerToList("abcd1234","192.168.8.10", 49222);
-        Node.getInstance().addPeerToList("pqrs5673","192.168.8.11", 49222);
+//        Node.getInstance().addPeerToList("abcd1234","192.168.8.10", 49222);
+//        Node.getInstance().addPeerToList("pqrs5673","192.168.8.11", 49222);
 
 //        for(Neighbour neighbour: Node.getInstance().getNodeConfig().getNeighbours()) {
 //            JSONObject jsonObject = new JSONObject(neighbour);
@@ -63,11 +63,35 @@ public class FirstNodeTest {
 
         DAO dao = new DAO();
 
-        for(Neighbour neighbour: dao.getPeers()) {
-            JSONObject jsonObject = new JSONObject(neighbour);
-            jsonObject.put("signature", "$$signature$$");
-            System.out.println(jsonObject);
-        }
+//        for(Neighbour neighbour: dao.getPeers()) {
+//            JSONObject jsonObject = new JSONObject(neighbour);
+//            jsonObject.put("signature", "$$signature$$");
+//            System.out.println(jsonObject);
+//        }
+
+//        ArrayList<Neighbour> list = new ArrayList<>();
+//
+//        for(int i= 0; i< 5; i++) {
+//            String ips = "192.168.8." + String.valueOf(i);
+//            String id = "id - " + String.valueOf(i);
+//            list.add(new Neighbour(id, ips, i ));
+//        }
+//
+//        for(Neighbour neighbour: list) {
+//            System.out.println(new JSONObject(neighbour));
+//        }
+//
+//        for(Neighbour neighbour: list) {
+//            if("id - 2".equals(neighbour.getNodeID())) {
+//                neighbour.setPort(6363);
+//            }
+//        }
+//
+//        for(Neighbour neighbour: list) {
+//            System.out.println(new JSONObject(neighbour));
+//        }
+
+//        dao.updatePeer("1234", "127.0.01", 23445);
 
     }
 }

@@ -28,8 +28,8 @@ public class RequestHandlerForServer {
         String messageType = (String) headers.get("messageType");
         String peerID = (String) headers.get("sender");
         switch (messageType) {
-            case "RequestIP":
-                System.out.println("RequestIP");
+            case "Register":
+                System.out.println("Register");
                 handleRequestIP(data, peerID);
                 break;
 
@@ -64,6 +64,5 @@ public class RequestHandlerForServer {
         RequestMessage peerDetailMessage = MessageCreator.createMessage(jsonObject,"RequestedPeerDetails");
         Node.getInstance().sendMessageToPeer(ip,listeningPort, peerDetailMessage);
     }
-
 
 }
